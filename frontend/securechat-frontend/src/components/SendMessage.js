@@ -28,9 +28,9 @@ const SendMessage = () => {
   }
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <Form.Group style={{ padding: 10 }}>
-        <Row>
+    <Form onSubmit={handleSubmit} class="mb-3">
+      <Form.Group style={{ padding: 10, margin: 10 }}>
+        <Row style={{ margin: 50 }}>
           <Col xs="auto">
             <Form.Label>From</Form.Label>
           </Col>
@@ -64,14 +64,19 @@ const SendMessage = () => {
               placeholder="Compose your message"
               defaultValue={"Something important"}
               name="content"
+              as="textarea"
+              rows={3}
             />
           </Col>
         </Row>
+        <Row>
+          <Col md="auto">
+            <Button variant="secondary" type="submit" className="send-message">
+              Submit
+            </Button>
+          </Col>
+        </Row>
       </Form.Group>
-
-      <Button variant="primary" type="submit" className="send-message">
-        Submit
-      </Button>
     </Form>
   );
 };
