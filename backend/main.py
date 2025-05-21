@@ -27,3 +27,7 @@ def read_root():
 def add_message(message_id: int, message: Message):
     messages.insert(message_id, message)
     return{"msg": "unencrypted message stored"}
+
+@app.get("/get-messages")
+def get_messages():
+    return messages
