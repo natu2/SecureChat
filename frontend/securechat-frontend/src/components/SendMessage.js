@@ -21,22 +21,20 @@ const SendMessage = () => {
     //console.log(formData);
 
     const formJson = Object.fromEntries(formData.entries());
-    console.log(JSON.stringify(formJson));
+    console.log(JSON.stringify({ ...formJson, time: Date.now() }));
 
     fetch(`http://localhost:8000/send/${index}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formJson),
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          alert("Message Sent!");
-        } else {
-          alert("Invalid input. Try again");
-        }
-      })
-      .then(() => navigate("/recent-messages"));
-
+      body: JSON.stringify({ ...formJson, time: Date.now() }),
+    }).then((res) => {
+      if (res.status === 201) {
+        alert("Message Sent!");
+        navigate("/recent-messages");
+      } else {
+        alert("Invalid input. Try again");
+      }
+    });
     index = index + 1;
   }
 

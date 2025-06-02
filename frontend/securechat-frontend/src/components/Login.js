@@ -22,8 +22,23 @@ const Login = () => {
     const inputUsername = formJson.username;
     const inputPassword = formJson.password;
 
-    updateUser(inputUsername, inputPassword, true);
-    navigate("/");
+    fetch(`http://localhost:8000/login`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: inputUsername,
+        password: inputPassword,
+        isLoggedIn: true,
+      }),
+    }).then((res) => {
+      if (res.status === 200) {
+        updateUser(inputUsername, inputPassword, true);
+        alert("Login Successful!");
+        navigate("/");
+      } else {
+        alert("This username already exists");
+      }
+    });
   }
   return (
     <div

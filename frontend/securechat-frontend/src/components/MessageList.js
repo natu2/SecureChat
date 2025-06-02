@@ -27,6 +27,7 @@ const MessageList = () => {
           receiver={message.receiver}
           body={message.content}
           index={index}
+          time={message.time}
         />
       );
     });

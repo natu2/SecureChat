@@ -22,12 +22,25 @@ const SignUp = () => {
     const confirmPassword = formJson.confirm;
 
     if (confirmPassword === inputPassword) {
-      //TODO- check that password doesn't already exists- need to create backend for login
-      updateUser(inputUsername, inputPassword, true);
-      alert("Successfully signed up!");
-      navigate("/");
+      fetch(`http://localhost:8000/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: inputUsername,
+          password: inputPassword,
+          isLoggedIn: true,
+        }),
+      }).then((res) => {
+        if (res.status === 201) {
+          updateUser(inputUsername, inputPassword, true);
+          alert("Signup Successful!");
+          navigate("/");
+        } else {
+          alert(`${res.statusText}`);
+        }
+      });
     } else {
-      alert("Invalid");
+      alert("Passwords dont match");
     }
   }
 
