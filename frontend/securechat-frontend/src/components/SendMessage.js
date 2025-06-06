@@ -21,7 +21,6 @@ const SendMessage = () => {
     //console.log(formData);
 
     const formJson = Object.fromEntries(formData.entries());
-    console.log(JSON.stringify({ ...formJson, time: Date.now() }));
 
     fetch(`http://localhost:8000/send/${index}`, {
       method: "POST",

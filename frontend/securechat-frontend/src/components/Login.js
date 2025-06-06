@@ -36,7 +36,7 @@ const Login = () => {
         alert("Login Successful!");
         navigate("/");
       } else {
-        alert("This username already exists");
+        alert("Incorrect");
       }
     });
   }
