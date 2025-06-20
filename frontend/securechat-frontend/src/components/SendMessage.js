@@ -22,7 +22,7 @@ const SendMessage = () => {
 
     const formJson = Object.fromEntries(formData.entries());
 
-    fetch(`http://localhost:8000/send/${index}`, {
+    fetch(`http://localhost:8000/send/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...formJson, time: Date.now() }),
@@ -40,7 +40,7 @@ const SendMessage = () => {
   return (
     <div>
       <h1> Compose a Message </h1>
-      <Form onSubmit={handleSubmit} class="mb-3">
+      <Form onSubmit={handleSubmit}>
         <Form.Group style={{ padding: 10, margin: 10 }}>
           <Row style={{ margin: 50 }}>
             <Col xs="auto">

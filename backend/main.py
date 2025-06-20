@@ -6,27 +6,23 @@ from collections import defaultdict
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 from Crypto.Util.Padding import pad, unpad
+import time
+import uuid
 
 app = FastAPI()
 
 encrypted_messages = []
 keys = defaultdict(str) #(sender, receiver) ==> key
-ivs = [] 
 
 usernames = {"trial": "trying"} #username => password
 user_pairs = [('trial', 'You')] # list of (sender, receiver) pairs
 
 
-class Message(BaseModel):
+class Message(BaseModel): #only exists for declaring api endpoints
     sender: str
     receiver: str
     content: str
     time: int
-
-    # def __init__(self, sender, receiver, content):
-    #     self.sender = sender
-    #     self.receiver = receiver
-    #     self.content = content
 
 class User(BaseModel):
     username: str
@@ -34,19 +30,26 @@ class User(BaseModel):
     isLoggedIn: bool
 
 class EncryptedMessage():
+    id: str
     sender: str
     receiver: str
     content: bytes
     time: int
-
-    def __init__(self, sender, receiver, content, time):
+    iv: bytes
+    
+    def __init__(self, sender, receiver, content, time, iv):
         self.sender = sender
         self.receiver = receiver
         self.content = content
         self.time = time
+        self.iv = iv
+        # TODO: test that this doesn't break anything, then change structure of encrypted_messages structure in every insert, finally remove index for send-message
+        ts = int(time)
+        rand = uuid.uuid4().hex[:6]
+        self.id = f"{ts}-{rand}"
 
 
-class DecryptedMessage():
+class DecryptedMessage(): #only exists for get-messages endpoint
     sender: str
     receiver: str
     content: str
@@ -84,7 +87,7 @@ def encrypt_message(iv: bytes, message: DecryptedMessage):
     cipher_text = cipher.encrypt(pad(plaintext, AES.block_size))
     return cipher_text
 
-def decrypt_message(iv: bytes, message: EncryptedMessage):
+def decrypt_message(message: EncryptedMessage):
     sender = message.sender
     receiver = message.receiver
     pair = (sender, receiver)
@@ -93,7 +96,7 @@ def decrypt_message(iv: bytes, message: EncryptedMessage):
         raise ValueError
     key = keys[pair]
 
-    cipher = AES.new(key, AES.MODE_CBC, iv)
+    cipher = AES.new(key, AES.MODE_CBC, message.iv)
     plain_text = unpad(cipher.decrypt(message.content), AES.block_size)
     return plain_text
 
@@ -103,16 +106,15 @@ def decrypt_message(iv: bytes, message: EncryptedMessage):
 def read_root():
     return {"msg": "SecureChat backend is running!"}
 
-@app.post("/send/{message_id}", status_code= status.HTTP_201_CREATED)
-def add_message(message_id: int, message: Message):
+@app.post("/send", status_code= status.HTTP_201_CREATED)
+def add_message(message: Message):
     # generating initialization vector
     iv = get_random_bytes(16)
-    ivs.insert(message_id, iv)
     
     # generating cipher text
     cipher_text = encrypt_message(iv= iv, message=  message)
-    encrypted_message = EncryptedMessage(message.sender, message.receiver, cipher_text, message.time)
-    encrypted_messages.insert(message_id, encrypted_message)
+    encrypted_message = EncryptedMessage(message.sender, message.receiver, cipher_text, message.time, iv)
+    encrypted_messages.append(encrypted_message)
     
     # updating user pairs
     pair = (message.sender, message.receiver)
@@ -135,11 +137,10 @@ def get_messages(sender: str, receiver: str):
     for i in range(len(encrypted_messages)):
         encrypted_message =  encrypted_messages[i]
         if (encrypted_message.sender == sender) and (encrypted_message.receiver == receiver):
-            print(encrypted_message.sender, sender)
-            print(encrypted_message.receiver, receiver)
-            plaintext = decrypt_message(ivs[i], encrypted_message)
-            decrypted_messages.insert(i, DecryptedMessage(encrypted_message.sender, encrypted_message.receiver, plaintext, encrypted_message.time))
-    
+            plaintext = decrypt_message(encrypted_message)
+            decrypted_messages.append(DecryptedMessage(encrypted_message.sender, encrypted_message.receiver, plaintext, encrypted_message.time))
+        decrypted_messages.sort(key= lambda message: message.time, reverse= True)
+
     return decrypted_messages
 
 @app.put("/login")
