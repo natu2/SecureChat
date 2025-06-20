@@ -53,14 +53,13 @@ const MessageList = () => {
       <Accordion>
         {messages
           .slice(messages.length - 20, messages.length)
-          .map((message, index) => {
+          .map((message) => {
             return (
               <MessageDisplay
-                key={index}
+                key={message.id}
                 sender={message.sender}
                 receiver={message.receiver}
                 body={message.content}
-                index={index}
                 time={message.time}
               />
             );

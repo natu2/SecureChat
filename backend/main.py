@@ -50,12 +50,13 @@ class EncryptedMessage():
 
 
 class DecryptedMessage(): #only exists for get-messages endpoint
+    id: str
     sender: str
     receiver: str
     content: str
     time: int
 
-    def __init__(self, sender, receiver, content, time):
+    def __init__(self, id, sender, receiver, content, time):
         self.sender = sender
         self.receiver = receiver
         self.content = content
@@ -138,7 +139,7 @@ def get_messages(sender: str, receiver: str):
         encrypted_message =  encrypted_messages[i]
         if (encrypted_message.sender == sender) and (encrypted_message.receiver == receiver):
             plaintext = decrypt_message(encrypted_message)
-            decrypted_messages.append(DecryptedMessage(encrypted_message.sender, encrypted_message.receiver, plaintext, encrypted_message.time))
+            decrypted_messages.append(DecryptedMessage(encrypted_message.id, encrypted_message.sender, encrypted_message.receiver, plaintext, encrypted_message.time))
         decrypted_messages.sort(key= lambda message: message.time, reverse= True)
 
     return decrypted_messages
