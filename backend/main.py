@@ -6,7 +6,6 @@ from collections import defaultdict
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 from Crypto.Util.Padding import pad, unpad
-import time
 import uuid
 
 app = FastAPI()
@@ -43,7 +42,6 @@ class EncryptedMessage():
         self.content = content
         self.time = time
         self.iv = iv
-        # TODO: test that this doesn't break anything, then change structure of encrypted_messages structure in every insert, finally remove index for send-message
         ts = int(time)
         rand = uuid.uuid4().hex[:6]
         self.id = f"{ts}-{rand}"
@@ -61,6 +59,7 @@ class DecryptedMessage(): #only exists for get-messages endpoint
         self.receiver = receiver
         self.content = content
         self.time = time
+        self.id = id
 
 app.add_middleware(
     CORSMiddleware,
@@ -71,20 +70,27 @@ app.add_middleware(
 )
 
 
-def encrypt_message(iv: bytes, message: DecryptedMessage):
+def encrypt_message(iv: bytes, message: DecryptedMessage, key= None):
     sender = message.sender
     receiver = message.receiver
     pair = (sender, receiver)
 
-    if (pair in keys):
+    if key is not None:
+        key = key
+    elif (pair in keys):
         key = keys[pair]
     else:
-        # Generate a key and initialization vector (IV)
         key = get_random_bytes(16)
         keys[pair] = key
+    
+    if not (len(key) == 16):
+        raise ValueError
 
     cipher = AES.new(key, AES.MODE_CBC, iv)
-    plaintext = message.content.encode('utf-8')
+    try: 
+        plaintext = message.content.encode('utf-8')
+    except Exception as e:
+        raise TypeError("invalid data type for message plaintext")
     cipher_text = cipher.encrypt(pad(plaintext, AES.block_size))
     return cipher_text
 
@@ -98,7 +104,7 @@ def decrypt_message(message: EncryptedMessage):
     key = keys[pair]
 
     cipher = AES.new(key, AES.MODE_CBC, message.iv)
-    plain_text = unpad(cipher.decrypt(message.content), AES.block_size)
+    plain_text = unpad(cipher.decrypt(message.content), AES.block_size).decode('utf-8')
     return plain_text
 
 
