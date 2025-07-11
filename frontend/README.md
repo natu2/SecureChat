@@ -1,70 +1,165 @@
-# Getting Started with Create React App
+# SecureChat Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern, secure messaging application built with React, featuring end-to-end encryption capabilities and a beautiful UI.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- 🔐 **Secure Messaging**: End-to-end encrypted communication
+- 🎨 **Modern UI**: Beautiful, responsive interface built with Tailwind CSS
+- 🚀 **Real-time Updates**: Live message polling with efficient updates
+- 📱 **Mobile Responsive**: Works perfectly on all device sizes
+- ♿ **Accessible**: Built with accessibility best practices
+- 🛡️ **Error Handling**: Comprehensive error boundaries and user feedback
+- 🔄 **Offline Support**: Graceful handling of network issues
+- 🎯 **Performance**: Optimized with React hooks and memoization
 
-### `npm start`
+## Technology Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **React 19+**: Latest React with hooks and concurrent features
+- **Tailwind CSS**: Utility-first CSS framework
+- **Radix UI**: Accessible, unstyled UI components
+- **Lucide React**: Beautiful, customizable icons
+- **Custom Hooks**: Reusable logic for state management
+- **Service Layer**: Clean API abstraction
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Project Structure
 
-### `npm test`
+```
+src/
+├── components/          # React components
+│   ├── ui/             # Reusable UI components
+│   ├── ErrorBoundary.jsx
+│   ├── MessageList.jsx
+│   └── SendMessage.jsx
+├── config/             # Configuration files
+│   └── api.js          # API configuration
+├── hooks/              # Custom React hooks
+│   └── useMessages.js  # Message management hook
+├── services/           # API services
+│   └── messageService.js
+├── utils/              # Utility functions
+│   └── constants.js    # Application constants
+└── lib/                # Third-party integrations
+    └── utils.js        # Utility functions
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Getting Started
 
-### `npm run build`
+### Prerequisites
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Node.js 18+ and npm
+- Backend API server running on port 8000
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Installation
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. Install dependencies:
+```bash
+npm install
+```
 
-### `npm run eject`
+2. Configure environment variables:
+```bash
+cp .env.example .env
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+3. Update `.env` with your configuration:
+```env
+REACT_APP_API_BASE_URL=http://localhost:8000
+REACT_APP_API_TIMEOUT=10000
+REACT_APP_POLLING_INTERVAL=5000
+REACT_APP_ENVIRONMENT=development
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Development
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Start the development server:
+```bash
+npm start
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-## Learn More
+### Building for Production
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+npm run build
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Testing
 
-### Code Splitting
+```bash
+npm test
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Linting
 
-### Analyzing the Bundle Size
+```bash
+npm run lint
+npm run lint:fix
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Bundle Analysis
 
-### Making a Progressive Web App
+```bash
+npm run analyze
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Configuration
 
-### Advanced Configuration
+### Environment Variables
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- `REACT_APP_API_BASE_URL`: Backend API URL
+- `REACT_APP_API_TIMEOUT`: API request timeout (ms)
+- `REACT_APP_POLLING_INTERVAL`: Message polling interval (ms)
+- `REACT_APP_ENVIRONMENT`: Environment (development/production)
 
-### Deployment
+### API Endpoints
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+- `GET /get-messages`: Retrieve all messages
+- `POST /send-message`: Send a new message
 
-### `npm run build` fails to minify
+## Security Features
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- **Input Validation**: All user inputs are validated and sanitized
+- **XSS Protection**: Content is sanitized to prevent XSS attacks
+- **CSRF Protection**: Proper request handling with tokens
+- **Rate Limiting**: Client-side request throttling
+- **Error Handling**: Secure error messages without sensitive data
+
+## Performance Optimizations
+
+- **Memoization**: Components and expensive operations are memoized
+- **Lazy Loading**: Code splitting for better initial load times
+- **Efficient Polling**: Smart polling with proper cleanup
+- **Bundle Optimization**: Tree shaking and dead code elimination
+
+## Accessibility
+
+- **ARIA Labels**: Proper labeling for screen readers
+- **Keyboard Navigation**: Full keyboard support
+- **Focus Management**: Proper focus handling
+- **Color Contrast**: WCAG AA compliant colors
+- **Responsive Design**: Works on all devices
+
+## Browser Support
+
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/new-feature`
+3. Commit changes: `git commit -m 'Add new feature'`
+4. Push to branch: `git push origin feature/new-feature`
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support
+
+For support, please open an issue on GitHub or contact the development team.

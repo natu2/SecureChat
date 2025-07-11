@@ -1,45 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
-import { RefreshCw, MessageCircle, User, Clock, ChevronDown, ChevronUp } from "lucide-react";
+import { RefreshCw, MessageCircle, Clock, ChevronDown, ChevronUp, AlertCircle } from "lucide-react";
 
-const MessageList = () => {
-  const [messages, setMessages] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [lastUpdated, setLastUpdated] = useState(null);
+const MessageList = ({ messages, isLoading, isRefreshing, lastUpdated, error, onRefresh }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-
-  const fetchMessages = async (isManualRefresh = false) => {
-    if (isManualRefresh) {
-      setIsRefreshing(true);
-    }
-    
-    try {
-      const response = await fetch(`http://localhost:8000/get-messages`);
-      const data = await response.json();
-      setMessages(data);
-      setLastUpdated(new Date());
-    } catch (error) {
-      console.error('Error fetching messages:', error);
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchMessages();
-    
-    // Refresh messages every 5 seconds
-    const interval = setInterval(() => fetchMessages(), 5000);
-    
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleRefresh = () => {
-    fetchMessages(true);
-  };
 
   const toggleExpanded = () => {
     setIsExpanded(!isExpanded);
@@ -52,13 +17,19 @@ const MessageList = () => {
     });
   };
 
+  const sortedMessages = useMemo(() => {
+    return [...messages].sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+  }, [messages]);
+
   return (
     <Card>
       <CardHeader className="py-4">
         <div className="flex items-center justify-between">
           <button
             onClick={toggleExpanded}
-            className="flex items-center gap-2 text-xl font-semibold hover:text-gray-600 transition-colors"
+            className="flex items-center gap-2 text-xl font-semibold hover:text-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded-md p-1"
+            aria-expanded={isExpanded}
+            aria-controls="messages-content"
           >
             <MessageCircle className="h-5 w-5" />
             Messages ({messages.length})
@@ -71,17 +42,26 @@ const MessageList = () => {
             </div>
           </button>
           <div className="flex items-center gap-4">
+            {error && (
+              <div className="flex items-center gap-1 text-red-600" title={error}>
+                <AlertCircle className="h-4 w-4" />
+                <span className="text-sm hidden sm:inline">Error</span>
+              </div>
+            )}
             {lastUpdated && (
               <span className="text-sm text-gray-500 flex items-center gap-1">
                 <Clock className="h-3 w-3" />
-                {lastUpdated.toLocaleTimeString()}
+                <span className="hidden sm:inline">
+                  {lastUpdated.toLocaleTimeString()}
+                </span>
               </span>
             )}
             <Button 
               variant="outline" 
               size="sm"
-              onClick={handleRefresh}
+              onClick={onRefresh}
               disabled={isRefreshing}
+              aria-label="Refresh messages"
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
               Refresh
@@ -90,14 +70,26 @@ const MessageList = () => {
         </div>
       </CardHeader>
       
-      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
-        isExpanded ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
-      }`}>
+      <div 
+        id="messages-content"
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${
+          isExpanded ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+        }`}
+      >
         <CardContent className="pt-0">
           {isLoading ? (
             <div className="flex items-center justify-center space-x-2 text-gray-500 py-8">
               <RefreshCw className="h-4 w-4 animate-spin" />
               <span>Loading messages...</span>
+            </div>
+          ) : error ? (
+            <div className="text-center py-12 text-red-500">
+              <AlertCircle className="h-16 w-16 mx-auto mb-4 opacity-30" />
+              <h3 className="text-lg font-medium mb-2 text-red-700">Error Loading Messages</h3>
+              <p className="text-sm mb-4">{error}</p>
+              <Button onClick={onRefresh} variant="outline" size="sm">
+                Try Again
+              </Button>
             </div>
           ) : messages.length === 0 ? (
             <div className="text-center py-12 text-gray-500">
@@ -106,21 +98,21 @@ const MessageList = () => {
               <p>Send your first secure message above!</p>
             </div>
           ) : (
-            <div className="space-y-2">
-              {messages.map((message, index) => (
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {sortedMessages.map((message, index) => (
                 <div 
-                  key={index} 
+                  key={message.id || index} 
                   className="border border-gray-200 rounded-md px-3 py-3 hover:bg-gray-50 transition-colors"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium text-gray-900">
-                      {message.sender} → {message.receiver}
+                      <span className="font-semibold">{message.sender}</span> → <span className="font-semibold">{message.receiver}</span>
                     </span>
                     <span className="text-xs text-gray-400">
-                      {formatTime(Date.now() - (messages.length - index) * 1000)}
+                      {message.timestamp ? formatTime(message.timestamp) : 'Just now'}
                     </span>
                   </div>
-                  <div className="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">
+                  <div className="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap break-words">
                     {message.content}
                   </div>
                 </div>

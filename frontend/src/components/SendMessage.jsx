@@ -148,4 +148,4 @@ const SendMessage = ({ onMessageSent, onSendMessage }) => {
   );
 };
 
-export default SendMessage;
+export default SendMessage; 
