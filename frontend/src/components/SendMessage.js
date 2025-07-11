@@ -49,13 +49,13 @@ const SendMessage = ({ onMessageSent }) => {
         }
       } else {
         if (onMessageSent) {
-          onMessageSent("Failed to send message. Please try again.", "error");
+          onMessageSent("Failed to send message. Try again.", "error");
         }
       }
     } catch (error) {
       console.error('Error sending message:', error);
       if (onMessageSent) {
-        onMessageSent("Failed to send message. Please try again.", "error");
+        onMessageSent("Failed to send message. Try again.", "error");
       }
     } finally {
       setIsLoading(false);
