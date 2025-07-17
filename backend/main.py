@@ -75,7 +75,10 @@ def encrypt_message(iv: bytes, message: DecryptedMessage, key= None):
     receiver = message.receiver
     pair = (sender, receiver)
 
+    
     if key is not None:
+        if not (len(key) == 16):
+            raise ValueError
         key = key
     elif (pair in keys):
         key = keys[pair]
@@ -83,10 +86,9 @@ def encrypt_message(iv: bytes, message: DecryptedMessage, key= None):
         key = get_random_bytes(16)
         keys[pair] = key
     
-    if not (len(key) == 16):
-        raise ValueError
-
     cipher = AES.new(key, AES.MODE_CBC, iv)
+    #print(90, key, iv)
+
     try: 
         plaintext = message.content.encode('utf-8')
     except Exception as e:
@@ -94,15 +96,21 @@ def encrypt_message(iv: bytes, message: DecryptedMessage, key= None):
     cipher_text = cipher.encrypt(pad(plaintext, AES.block_size))
     return cipher_text
 
-def decrypt_message(message: EncryptedMessage):
+def decrypt_message(message: EncryptedMessage, key= None):
     sender = message.sender
     receiver = message.receiver
     pair = (sender, receiver)
 
-    if pair not in keys:
+    if key is not None:
+        key = key
+        keys[pair] = key
+    elif pair not in keys:
         raise ValueError
-    key = keys[pair]
+    else:
+        key = keys[pair]
 
+    #print(112, key, message.iv)
+    
     cipher = AES.new(key, AES.MODE_CBC, message.iv)
     plain_text = unpad(cipher.decrypt(message.content), AES.block_size).decode('utf-8')
     return plain_text

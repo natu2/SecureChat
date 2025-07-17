@@ -4,12 +4,15 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from Crypto.Random import get_random_bytes
+
 from main import encrypt_message, decrypt_message
 from test_module import make_test_enc_message, make_test_dec_message, run_encryption, run_decryption
 
 class EncryptionTestCase (unittest.TestCase):
 
     def test_encrypt_correctness(self):
+        # Dec(Enc(pt)) = pt
+        
         # step 1: encrypt plaintext
         iv = get_random_bytes(16)
         cipher_text = run_encryption(iv= iv, plaintext= "encryption then decryption should result in original plaintext")
@@ -44,14 +47,16 @@ class EncryptionTestCase (unittest.TestCase):
         try:
             # edge case 1: empyt string
             run_encryption(plaintext="")
-            
+        except Exception as e:
+            self.fail("Encrypting empty message caused unexpected error or exception")
+        
+        try:
             # edge case 2: very large message
             one_mb_in_bytes = 1024 * 1024
             large_string = "A" * one_mb_in_bytes
             run_encryption(plaintext= large_string)
-        
-        except Exception as e:
-            self.fail("Encrypting empty message caused unexpected error or exception")
+        except Exception as e: 
+            self.fail("Encrypting large message caused unexpected error or exception")
         
         try:
             # edge case 3: invalid key
