@@ -1,0 +1,20 @@
+{
+  "name": "securechat",
+  "version": "1.0.0",
+  "description": "A secure chat application with frontend and backend",
+  "main": "index.js",
+  "scripts": {
+    "start": "cd frontend && npm start",
+    "dev": "cd frontend && npm start",
+    "build": "cd frontend && npm run build",
+    "test": "cd frontend && npm test",
+    "install-frontend": "cd frontend && npm install",
+    "install-backend": "cd backend && pip install -r requirements.txt"
+  },
+  "keywords": ["chat", "secure", "react", "python"],
+  "author": "",
+  "license": "MIT",
+  "workspaces": [
+    "frontend"
+  ]
+} 
