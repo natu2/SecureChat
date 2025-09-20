@@ -46,8 +46,11 @@ The server will start at `http://localhost:8000`
 ## API Endpoints
 
 - `GET /` - Health check
-- `POST /send/{message_id}` - Send a message
-- `GET /get-messages` - Get all messages
+- `POST /send` - Send a message
+- `GET /get-receivers` - Get receivers for a sender
+- `GET /get-messages` - Get all messages between sender and receiver
+- `PUT /login` - User login
+- `POST /signup` - User signup
 
 ## Development
 
@@ -80,10 +83,13 @@ uv run flake8
 
 ```
 backend/
-├── main.py          # FastAPI application
-├── run.py           # Application runner script
-├── pyproject.toml   # uv configuration
-├── setup.sh         # Unix setup script
-├── setup.bat        # Windows setup script
-└── README.md        # This file
-``` 
+├── main.py                # FastAPI application (API endpoints only)
+├── cryptography/
+│   ├── symmetric_crypto.py   # Symmetric encryption logic
+│   └── message_models.py     # Pydantic models for messages and users
+├── run.py                 # Application runner script
+├── pyproject.toml         # uv configuration
+├── setup.sh               # Unix setup script
+├── setup.bat              # Windows setup script
+└── README.md
+```

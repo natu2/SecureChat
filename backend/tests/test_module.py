@@ -8,7 +8,9 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from main import encrypt_message, decrypt_message, EncryptedMessage, DecryptedMessage
+from cryptography.symmetric_crypto import encrypt_message, decrypt_message
+from cryptography.message_models import EncryptedMessage, DecryptedMessage
+
 
 def make_test_enc_message(**overrides):
         return EncryptedMessage(

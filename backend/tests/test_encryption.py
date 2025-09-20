@@ -5,8 +5,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from Crypto.Random import get_random_bytes
 
-from main import encrypt_message, decrypt_message
-from test_module import make_test_enc_message, make_test_dec_message, run_encryption, run_decryption
+from test_module import run_encryption, run_decryption
 
 class EncryptionTestCase (unittest.TestCase):
 
