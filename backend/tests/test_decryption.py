@@ -9,9 +9,11 @@ from Crypto.Cipher import AES
 from main import encrypt_message, decrypt_message
 from test_module import make_test_enc_message, make_test_dec_message, run_encryption, run_decryption
 
-class DecryptionTestCase (unittest.TestCase):
+class DecryptionTestCase(unittest.TestCase):
+    """Tests for symmetric decryption logic, including correctness and edge cases."""
 
     def test_decrypt_correctness(self):
+        """Ensures that decrypting and then re-encrypting returns the original ciphertext."""
         # Enc(Dec(Enc(m))) = Enc(m)
         chosen_key = get_random_bytes(16)
         iv = get_random_bytes(16)
@@ -23,6 +25,7 @@ class DecryptionTestCase (unittest.TestCase):
         self.assertEqual(first_ct, second_ct)
 
     def test_decrypt_with_wrong_iv(self):
+        """Checks that decryption with an incorrect IV raises a ValueError."""
         # Decryption with wrong IV should fail
         initial_iv = b'10'*8
         initial_pt = "testing IV"
@@ -33,6 +36,7 @@ class DecryptionTestCase (unittest.TestCase):
             run_decryption(iv= altered_iv, ciphertext=correct_ct)
     
     def test_decrypt_with_wrong_key(self):
+        """Checks that decryption with an incorrect key raises a ValueError."""
         # encrypt two different messages of different sender-reciever pairs.
         ct_1 = encrypt_message(iv= get_random_bytes(16), message= make_test_dec_message(sender= "a", receiver= "b"))
         ct_2 = encrypt_message(iv= get_random_bytes(16), message= make_test_dec_message(sender= "c", receiver= "d"))
@@ -41,12 +45,16 @@ class DecryptionTestCase (unittest.TestCase):
         with self.assertRaises(ValueError):
             decrypt_message(make_test_enc_message(sender= "a", receiver= "b", content= ct_2))
             decrypt_message(make_test_enc_message(sender= "c", receiver= "d", content= ct_1))
-        
-        # resulting plaintext should NOT match original plaintext
-        
+    
+    def test_decrypt_with_missing_key(self):
+        """Checks that decryption without a pre-existing key raises a ValueError."""
+        ct = encrypt_message(iv= get_random_bytes(16), message= make_test_dec_message(sender= "a", receiver= "b"))
+        with self.assertRaises(ValueError):
+            decrypt_message(make_test_enc_message(sender= "x", receiver= "y", content= ct))
 
     def test_all_edge_cases(self):
         # edge case 1: decrypt empty string ==> should NOT raise exception
+        """Edge cases for decryption logic: empty strings, large strings, wrong types, malformed keys."""
         iv_empty_string = get_random_bytes(16)
         ct_empty_string = run_encryption(iv= iv_empty_string, plaintext= "")
         try:

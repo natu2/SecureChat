@@ -1,5 +1,7 @@
 node_modules
 *.pyc
-/backend/__pycache__/*
 /frontend/node_modules
-/backend/__pycache__/main.cpython-39.pyc
+/backend/htmlcov/
+**/.coverage
+/backend/.pytest_cache/
+/backend/__pycache__/

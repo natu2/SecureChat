@@ -8,9 +8,10 @@ from Crypto.Random import get_random_bytes
 from test_module import run_encryption, run_decryption
 
 class EncryptionTestCase (unittest.TestCase):
+    """Tests for symmetric encryption logic, including correctness and edge cases."""
 
     def test_encrypt_correctness(self):
-        # Dec(Enc(pt)) = pt
+        """Ensures that encrypting and then decrypting returns the original plaintext."""
         
         # step 1: encrypt plaintext
         iv = get_random_bytes(16)
@@ -24,6 +25,7 @@ class EncryptionTestCase (unittest.TestCase):
         self.assertEqual(actual_plaintext, expected_plaintext)
     
     def test_encrypt_with_different_IVs(self):
+        """Checks that encrypting the same message with different IVs yields different ciphertexts."""
         # the same message encrypted with different IVs should yield different message
         iv_1 = get_random_bytes(16)
         ct_1 = run_encryption(iv=iv_1)
@@ -42,7 +44,7 @@ class EncryptionTestCase (unittest.TestCase):
         
     
     def test_all_edge_cases(self):
-        
+        """Edge cases for encryption logic: empty strings, large strings, wrong types, malformed keys."""
         try:
             # edge case 1: empyt string
             run_encryption(plaintext="")

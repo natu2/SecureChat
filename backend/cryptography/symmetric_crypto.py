@@ -38,7 +38,7 @@ def decrypt_message(message, key=None):
         key = key
         symmetric_keys[pair] = key
     elif pair not in symmetric_keys:
-        raise ValueError
+        raise ValueError("no symmetric key found for this sender-receiver pair")
     else:
         key = symmetric_keys[pair]
 
