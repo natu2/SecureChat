@@ -77,6 +77,7 @@ def check_username(user: User, response: Response):
         response.status_code = status.HTTP_400_BAD_REQUEST
         return{"msg": "Incorrect password"}
     else:
+        user.isLoggedIn = True
         return{"msg": "Login succedeed"}
 
 @app.post("/signup", status_code= status.HTTP_201_CREATED)
