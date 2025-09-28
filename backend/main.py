@@ -5,17 +5,19 @@ from fastapi.middleware.cors import CORSMiddleware
 # cryptography imports
 from Crypto.Random import get_random_bytes
 
-# backend imports
-from collections import defaultdict
-
+# cryptography utils imports
 from cryptography.symmetric_crypto import encrypt_message, decrypt_message
 from cryptography.message_models import Message, EncryptedMessage, DecryptedMessage, User
+
+# services imports
+from services.user_service import add_user, check_login_credentials, get_receivers as get_message_receivers
 
 app = FastAPI()
 
 encrypted_messages = []
 
-usernames = {"trial": "trying"} #username => password
+usernames = {"trial": "trying"} #username => password, will be replaced by users dict eventually
+users = {"trial": User(username="trial", password="trying", isLoggedIn=False)} # username => User object
 user_pairs = [('trial', 'You')] # list of (sender, receiver) pairs
 
 app.add_middleware(
@@ -49,12 +51,10 @@ def add_message(message: Message):
     return{"msg": "encrypted message stored"}
 
 @app.get("/get-receivers")
-def get_receivers(sender: str):
-    receivers = []
-    for (val_1, val_2) in user_pairs:
-        if val_1 == sender:
-            receivers.append(val_2)
-    return receivers
+def get_receivers(sender: str, response: Response):
+    message, status_code = get_message_receivers(sender, user_pairs)
+    response.status_code = status_code
+    return message
 
 @app.get("/get-messages")
 def get_messages(sender: str, receiver: str):
@@ -70,21 +70,12 @@ def get_messages(sender: str, receiver: str):
 
 @app.put("/login")
 def check_username(user: User, response: Response):
-    if user.username not in usernames:
-        response.status_code = status.HTTP_400_BAD_REQUEST
-        return{"msg": "This user does not exists"}
-    if user.password != usernames[user.username]:
-        response.status_code = status.HTTP_400_BAD_REQUEST
-        return{"msg": "Incorrect password"}
-    else:
-        user.isLoggedIn = True
-        return{"msg": "Login succedeed"}
+    message, status_code = check_login_credentials(user, users)
+    response.status_code = status_code
+    return message
 
 @app.post("/signup", status_code= status.HTTP_201_CREATED)
 def add_username(user: User, response: Response):
-    if user.username in usernames:
-        response.status_code = status.HTTP_409_CONFLICT
-        return{"msg": "This username already exists"}
-    else:
-        usernames[user.username] = user.password
-        return{"msg": "Signup succedeed"}
+    message, status_code = add_user(user, users)
+    response.status_code = status_code
+    return message

@@ -5,12 +5,14 @@ FastAPI backend for the SecureChat application.
 ## Quick Start
 
 ### Prerequisites
+
 - Python 3.8.1 or higher
 - Git
 
 ### Setup
 
 #### Option 1: Automatic Setup (Recommended)
+
 ```bash
 # On macOS/Linux
 chmod +x setup.sh
@@ -21,6 +23,7 @@ setup.bat
 ```
 
 #### Option 2: Manual Setup
+
 ```bash
 # Install uv (if not already installed)
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -32,11 +35,13 @@ uv sync
 ### Running the Backend
 
 #### Development Mode (with auto-reload)
+
 ```bash
-uv run python run.py
+uv run python backend/run.py
 ```
 
 #### Alternative: Direct uvicorn command
+
 ```bash
 uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
@@ -55,26 +60,31 @@ The server will start at `http://localhost:8000`
 ## Development
 
 ### Adding Dependencies
+
 ```bash
 uv add package-name
 ```
 
 ### Adding Dev Dependencies
+
 ```bash
 uv add --dev package-name
 ```
 
 ### Running Tests
+
 ```bash
 uv run pytest
 ```
 
 ### Code Formatting
+
 ```bash
 uv run black .
 ```
 
 ### Linting
+
 ```bash
 uv run flake8
 ```
