@@ -13,7 +13,6 @@ app = FastAPI()
 
 encrypted_messages = []
 
-usernames = {"trial": "trying"} #username => password, will be replaced by users dict eventually
 users = {"trial": User(username="trial", password="trying", isLoggedIn=False)} # username => User object
 user_pairs = [('trial', 'You')] # list of (sender, receiver) pairs
 
