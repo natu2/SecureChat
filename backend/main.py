@@ -2,9 +2,6 @@
 from fastapi import FastAPI, status, Response
 from fastapi.middleware.cors import CORSMiddleware
 
-# cryptography imports
-from Crypto.Random import get_random_bytes
-
 # cryptography utils imports
 from cryptography.message_models import Message, User
 
